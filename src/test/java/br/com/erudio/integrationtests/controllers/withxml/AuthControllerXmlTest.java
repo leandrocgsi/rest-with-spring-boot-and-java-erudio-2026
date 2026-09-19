@@ -5,15 +5,15 @@ import br.com.erudio.integrationtests.dto.AccountCredentialsDTO;
 import br.com.erudio.integrationtests.dto.PersonDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -24,15 +24,14 @@ class AuthControllerXmlTest extends AbstractIntegrationTest {
 
     @BeforeAll
     static void setUp() {
-        objectMapper = new XmlMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = XmlMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
 
         tokenDto = new TokenDTO();
     }
 
     @Test
     @Order(1)
-    void signin() throws JsonProcessingException {
+    void signin() throws JacksonException {
         AccountCredentialsDTO credentials =
             new AccountCredentialsDTO("leandro", "admin123");
 
@@ -58,7 +57,7 @@ class AuthControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
-    void refreshToken() throws JsonProcessingException {
+    void refreshToken() throws JacksonException {
         var content = given()
                 .basePath("/auth/refresh")
                 .port(TestConfigs.SERVER_PORT)

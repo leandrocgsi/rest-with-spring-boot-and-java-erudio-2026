@@ -5,9 +5,9 @@ import br.com.erudio.integrationtests.controllers.withyaml.mapper.YAMLMapper;
 import br.com.erudio.integrationtests.dto.AccountCredentialsDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.dataformat.xml.XmlMapper;
 import io.restassured.config.EncoderConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -34,7 +34,7 @@ class AuthControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    void signin() throws JsonProcessingException {
+    void signin() throws JacksonException {
         AccountCredentialsDTO credentials =
             new AccountCredentialsDTO("leandro", "admin123");
 
@@ -64,7 +64,7 @@ class AuthControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
-    void refreshToken() throws JsonProcessingException {
+    void refreshToken() throws JacksonException {
         tokenDto = given().config(
                 RestAssuredConfig.config()
                     .encoderConfig(

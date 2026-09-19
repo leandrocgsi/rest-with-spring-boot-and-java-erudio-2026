@@ -6,9 +6,9 @@ import br.com.erudio.integrationtests.dto.BookDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.dto.wrappers.xmlandyaml.PagedModelBook;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -21,8 +21,8 @@ import org.springframework.http.MediaType;
 import java.util.Date;
 
 import static io.restassured.RestAssured.given;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -37,8 +37,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @BeforeAll
     static void setUp() {
-        objectMapper = new XmlMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = XmlMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
 
         book = new BookDTO();
         tokenDto = new TokenDTO();
@@ -46,7 +45,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(0)
-    void signin() throws JsonProcessingException {
+    void signin() throws JacksonException {
         AccountCredentialsDTO credentials =
                 new AccountCredentialsDTO("leandro", "admin123");
 
@@ -83,7 +82,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    void createTest() throws JsonProcessingException {
+    void createTest() throws JacksonException {
         mockBook();
 
         var content = given(specification)
@@ -111,7 +110,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
     
     @Test
     @Order(2)
-    void updateTest() throws JsonProcessingException {
+    void updateTest() throws JacksonException {
 
         book.setTitle("Docker Deep Dive - Updated");
 
@@ -140,7 +139,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
-    void findByIdTest() throws JsonProcessingException {
+    void findByIdTest() throws JacksonException {
 
         var content = given(specification)
                 .contentType(MediaType.APPLICATION_XML_VALUE)
@@ -170,7 +169,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
-    void deleteTest() throws JsonProcessingException {
+    void deleteTest() throws JacksonException {
 
         given(specification)
                 .pathParam("id", book.getId())
@@ -183,7 +182,7 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(5)
-    void findAllTest() throws JsonProcessingException {
+    void findAllTest() throws JacksonException {
 
         var content = given(specification)
                 .accept(MediaType.APPLICATION_XML_VALUE)

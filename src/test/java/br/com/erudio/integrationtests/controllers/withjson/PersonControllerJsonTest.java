@@ -6,9 +6,10 @@ import br.com.erudio.integrationtests.dto.PersonDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.dto.wrappers.json.WrapperPersonDTO;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -23,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -41,8 +42,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @BeforeAll
     static void setUp() {
-        objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
 
         person = new PersonDTO();
         tokenDto = new TokenDTO();
@@ -83,7 +83,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    void createTest() throws JsonProcessingException {
+    void createTest() throws JacksonException {
         mockPerson();
 
         var content = given(specification)
@@ -114,7 +114,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
     
     @Test
     @Order(2)
-    void updateTest() throws JsonProcessingException {
+    void updateTest() throws JacksonException {
         person.setLastName("Benedict Torvalds");
 
         var content = given(specification)
@@ -145,7 +145,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
-    void findByIdTest() throws JsonProcessingException {
+    void findByIdTest() throws JacksonException {
 
         var content = given(specification)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -174,7 +174,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
-    void disableTest() throws JsonProcessingException {
+    void disableTest() throws JacksonException {
 
         var content = given(specification)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -203,7 +203,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(5)
-    void deleteTest() throws JsonProcessingException {
+    void deleteTest() throws JacksonException {
 
         given(specification)
                 .pathParam("id", person.getId())
@@ -216,7 +216,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
-    void findAllTest() throws JsonProcessingException {
+    void findAllTest() throws JacksonException {
 
         var content = given(specification)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -258,7 +258,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(7)
-    void findByNameTest() throws JsonProcessingException {
+    void findByNameTest() throws JacksonException {
 
         // {{baseUrl}}/api/person/v1/findPeopleByName/and?page=0&size=12&direction=asc
         var content = given(specification)
@@ -302,7 +302,7 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(8)
-    void hateoasAndHalTest() throws JsonProcessingException {
+    void hateoasAndHalTest() throws JacksonException {
 
         Response response = (Response) given(specification)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -348,8 +348,8 @@ class PersonControllerJsonTest extends AbstractIntegrationTest {
             assertThat(pageAttributes.get("size"), is(12));
             assertThat(pageAttributes.get("number"), is(3));
 
-            assertTrue("totalElements should be greater than 0", (Integer) pageAttributes.get("totalElements") > 0);
-            assertTrue("totalPages should be greater than 0", (Integer) pageAttributes.get("totalPages") > 0);
+            assertTrue((Integer) pageAttributes.get("totalElements") > 0, "totalElements should be greater than 0");
+            assertTrue((Integer) pageAttributes.get("totalPages") > 0, "totalPages should be greater than 0");
         }
     }
 

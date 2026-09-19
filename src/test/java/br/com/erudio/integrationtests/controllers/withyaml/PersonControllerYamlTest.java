@@ -7,7 +7,7 @@ import br.com.erudio.integrationtests.dto.PersonDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.dto.wrappers.xmlandyaml.PagedModelPerson;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.EncoderConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -52,7 +52,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(0)
-    void signin() throws JsonProcessingException {
+    void signin() throws JacksonException {
         AccountCredentialsDTO credentials =
                 new AccountCredentialsDTO("leandro", "admin123");
 
@@ -91,7 +91,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    void createTest() throws JsonProcessingException {
+    void createTest() throws JacksonException {
         mockPerson();
 
         var createdPerson = given().config(
@@ -127,7 +127,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
     
     @Test
     @Order(2)
-    void updateTest() throws JsonProcessingException {
+    void updateTest() throws JacksonException {
         person.setLastName("Benedict Torvalds");
 
         var createdPerson = given().config(
@@ -163,7 +163,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
-    void findByIdTest() throws JsonProcessingException {
+    void findByIdTest() throws JacksonException {
 
         var createdPerson = given().config(
                         RestAssuredConfig.config()
@@ -197,7 +197,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
-    void disableTest() throws JsonProcessingException {
+    void disableTest() throws JacksonException {
 
         var createdPerson = given().config(
                         RestAssuredConfig.config()
@@ -230,7 +230,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(5)
-    void deleteTest() throws JsonProcessingException {
+    void deleteTest() throws JacksonException {
 
         given(specification)
                 .pathParam("id", person.getId())
@@ -242,7 +242,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
-    void findAllTest() throws JsonProcessingException {
+    void findAllTest() throws JacksonException {
 
         var response = given(specification)
                 .accept(MediaType.APPLICATION_YAML_VALUE)
@@ -283,7 +283,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(7)
-    void findByNameTestTest() throws JsonProcessingException {
+    void findByNameTestTest() throws JacksonException {
 
         var response = given(specification)
                 .accept(MediaType.APPLICATION_YAML_VALUE)
@@ -325,7 +325,7 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
-    void hateoasAndHalTest() throws JsonProcessingException {
+    void hateoasAndHalTest() throws JacksonException {
 
         Response response = given(specification)
                 .accept(MediaType.APPLICATION_YAML_VALUE)
@@ -373,8 +373,8 @@ class PersonControllerYamlTest extends AbstractIntegrationTest {
         Integer totalElements = Integer.parseInt(page.get("totalElements").toString());
         Integer totalPages = Integer.parseInt(page.get("totalPages").toString());
 
-        assertTrue("totalElements should be greater than 0", totalElements > 0);
-        assertTrue("totalPages should be greater than 0", totalPages > 0);
+        assertTrue(totalElements > 0, "totalElements should be greater than 0");
+        assertTrue(totalPages > 0, "totalPages should be greater than 0");
 
         // Validates the navigation links of the page
         List<Map<String, String>> pageLinks = (List<Map<String, String>>) parsedYaml.get("links");

@@ -5,9 +5,10 @@ import br.com.erudio.integrationtests.dto.AccountCredentialsDTO;
 import br.com.erudio.integrationtests.dto.PersonDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -18,8 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -34,8 +35,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
 
     @BeforeAll
     static void setUp() {
-        objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
 
         person = new PersonDTO();
         tokenDto = new TokenDTO();
@@ -66,7 +66,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    void create() throws JsonProcessingException {
+    void create() throws JacksonException {
         mockPerson();
 
         specification = new RequestSpecBuilder()
@@ -110,7 +110,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
-    void createWithWrongOrigin() throws JsonProcessingException {
+    void createWithWrongOrigin() throws JacksonException {
 
         specification = new RequestSpecBuilder()
             .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
@@ -138,7 +138,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
-    void findById() throws JsonProcessingException {
+    void findById() throws JacksonException {
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_LOCAL)
                 .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + tokenDto.getAccessToken())
@@ -178,7 +178,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
     }
     @Test
     @Order(4)
-    void findByIdWithWrongOrigin() throws JsonProcessingException {
+    void findByIdWithWrongOrigin() throws JacksonException {
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
                 .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + tokenDto.getAccessToken())

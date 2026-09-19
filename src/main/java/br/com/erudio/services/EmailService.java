@@ -3,11 +3,11 @@ package br.com.erudio.services;
 import br.com.erudio.config.EmailConfig;
 import br.com.erudio.data.dto.request.EmailRequestDTO;
 import br.com.erudio.mail.EmailSender;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class EmailService {
     public void setEmailWithAttachment(String emailRequestJson, MultipartFile attachment) {
         File tempFile = null;
         try {
-            EmailRequestDTO emailRequest = new ObjectMapper().readValue(emailRequestJson, EmailRequestDTO.class);
+            EmailRequestDTO emailRequest = JsonMapper.builder().build().readValue(emailRequestJson, EmailRequestDTO.class);
             tempFile = File.createTempFile("attachment", attachment.getOriginalFilename());
             attachment.transferTo(tempFile);
 
@@ -43,7 +43,7 @@ public class EmailService {
                 .attach(tempFile.getAbsolutePath())
                 .send(emailConfigs);
 
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Error parsing email request JSON!", e);
         } catch (IOException e) {
             throw new RuntimeException("Error processing the attachment!", e);
