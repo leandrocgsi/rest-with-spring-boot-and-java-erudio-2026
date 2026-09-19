@@ -18,6 +18,7 @@ mvn clean package -DskipTests          # build the jar
 mvn test                               # everything (needs Docker)
 mvn test -Dtest=PersonServicesTest     # one test class
 mvn flyway:migrate                     # apply migrations manually (pom hardcodes localhost DB + root/admin123)
+docker compose up -d --build           # app on :8080 + MySQL 9 on :3308 (run "mvn clean package" first, the image copies target/*.jar)
 ```
 
 Tests split into two kinds:
@@ -41,7 +42,7 @@ E-mail, upload and the reports have their own tests: unit tests in `unittests/{m
 - `FileStorageService` creates `file.upload-dir` (`/Code/UploadDir`) in its constructor at startup. On Windows this resolves against the current drive root.
 - Swagger UI is served at `/swagger-ui/index.html`.
 - Seeded login used by the tests: `leandro` / `admin123`.
-- PDF export compiles the `.jrxml` templates at request time. That only works when the classes are on a normal classpath (`mvn spring-boot:run`, an IDE, or an exploded jar); from `java -jar` on the fat jar the compile fails with `cannot find symbol JREvaluator`. The compile also opened an outbound HTTPS connection in one run (a `ConnectException` was the root cause of a failed export), and export failures reach the client as an empty `403`, not a `500`.
+- PDF export compiles the `.jrxml` templates at request time. That only works when the classes are on a normal classpath (`mvn spring-boot:run`, an IDE, or an exploded jar); from `java -jar` on the fat jar it fails for three separate reasons: `javac` cannot read the nested jars (`cannot find symbol JREvaluator`), `PdfExporter` passes the `books.jasper` sub-report as a file path (`FileNotFoundException: app.jar!/templates/books.jasper`), and `people.jrxml` asks for the `Arial` font, which a Linux JVM usually lacks (JasperReports reads the "ignore missing font" flag only from a `jasperreports.properties` on the classpath, not from `-D`). The `Dockerfile` works around all three. The compile also opened an outbound HTTPS connection in one run (a `ConnectException` was the root cause of a failed export), and export failures reach the client as an empty `403`, not a `500`.
 
 ## Architecture
 
@@ -72,7 +73,15 @@ Standard layering: `controllers` → `services` → `repository` (Spring Data JP
 
 Versions are inherited from the Spring Boot parent wherever it manages them (Flyway, Jackson, Hibernate, Testcontainers, JUnit, Mockito, the MySQL driver used by the Flyway plugin via `${mysql.version}`). Only libraries the BOM does not manage carry an explicit version property in `pom.xml`: springdoc, REST Assured, POI, commons-csv, JasperReports, ZXing, java-jwt and Dozer.
 
+## Docker and CI
+
+- `Dockerfile` (`eclipse-temurin:25-jdk`) does not run `java -jar`: it unpacks `target/*.jar` into `/app`, adds `/app/config/jasperreports.properties` (ignore missing font) and starts `br.com.erudio.Startup` with `/app/config:/app/BOOT-INF/classes:/app/BOOT-INF/lib/*` as classpath, so the three PDF problems above do not happen. If those are ever fixed in the application, the image can go back to `COPY target/*.jar app.jar` + `ENTRYPOINT ["java","-jar","/app.jar"]`. The unpacking uses a BuildKit bind mount of `target/`, so `.dockerignore` must keep `!target/*.jar`.
+- `docker-compose.yml`: `db` is `mysql:9` (host port 3308, since the developer's own MySQL owns 3306) with a healthcheck, and `app` waits for it (`condition: service_healthy`); without that the app restarts about 5 times while MySQL initializes. The skill template's `command: mysqld --default_authentication_plugin=mysql_native_password` must not be used: MySQL 9 removed the option and the container crash-loops. E-mail credentials are not in the compose file; add `EMAIL_USERNAME` / `EMAIL_PASSWORD` to the `app` environment if you need to send mail.
+- `.github/workflows/continuous-deployment.yml` (the file the README badge points to) runs on push to `main`: Docker Hub login, Java 25 (temurin) setup, `mvn clean package` (runs all tests; the integration tests need Docker, which `ubuntu-latest` has), `docker compose build`, then pushes `${DOCKER_USERNAME}/rest-with-spring-boot-erudio` tagged `latest` and `${{ github.run_id }}`. It needs the repository secrets `DOCKER_USERNAME` and `DOCKER_ACCESS_TOKEN`.
+- `.claude/` (project skills and local settings) is git-ignored on purpose so the skills are not published.
+
 ## Notes
 
+- The owner dislikes comments: do not add code comments (Java, XML, YAML, Dockerfile, ignore files); put explanations in this file or in the commit message instead.
 - `spring-boot-devtools` is on the runtime classpath.
 - `TestLogController` (`/api/test/v1`) is a demo endpoint for exercising log levels.

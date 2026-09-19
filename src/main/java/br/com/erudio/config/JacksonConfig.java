@@ -20,20 +20,9 @@ import tools.jackson.dataformat.yaml.YAMLMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Jackson 3 changed a few defaults that show up in the API payloads. JSON and XML get Jackson 2 defaults from
- * {@code spring.jackson.use-jackson2-defaults}; this class covers the rest so that the responses stay exactly
- * as they were before the upgrade.
- */
 @Configuration
 public class JacksonConfig {
 
-    /**
-     * Jackson 3 writes the properties inherited from {@link RepresentationModel} (the HATEOAS "links") before the
-     * ones declared by the DTO, Jackson 2 wrote them last. Collections ({@link CollectionModel}, e.g. the paged
-     * result) already come out with the links first in both, so they are left alone.
-     * Registered for JSON and XML by Spring Boot and for YAML below.
-     */
     @Bean
     JacksonModule hateoasLinksLastModule() {
         return new SimpleModule("hateoasLinksLast").setSerializerModifier(new ValueSerializerModifier() {
@@ -60,11 +49,6 @@ public class JacksonConfig {
         });
     }
 
-    /**
-     * Spring Boot only configures the JSON and XML mappers. The YAML converter would use plain Jackson 3
-     * defaults (alphabetical properties, dates as ISO strings), so it is configured here with what it used to have:
-     * declaration order, dates as epoch milliseconds and unknown properties ignored.
-     */
     @Bean
     ServerHttpMessageConvertersCustomizer yamlMessageConverterCustomizer(JacksonModule hateoasLinksLastModule) {
         return builder -> builder.withYamlConverter(new JacksonYamlHttpMessageConverter(

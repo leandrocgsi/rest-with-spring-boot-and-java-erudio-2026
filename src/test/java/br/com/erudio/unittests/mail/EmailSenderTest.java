@@ -54,7 +54,7 @@ class EmailSenderTest {
         ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
         verify(mailSender).send(captor.capture());
         MimeMessage message = captor.getValue();
-        message.saveChanges(); // an in-memory message only gets its headers when it is saved
+        message.saveChanges();
         return message;
     }
 

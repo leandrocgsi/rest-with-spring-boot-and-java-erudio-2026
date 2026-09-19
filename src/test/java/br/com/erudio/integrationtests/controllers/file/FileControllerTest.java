@@ -18,7 +18,6 @@ class FileControllerTest extends AuthenticatedIntegrationTest {
 
     private static final String BASE = "/api/file/v1";
 
-    /** Every test uses its own file name, so the tests never depend on each other or on previous runs. */
     private static String uniqueName(String extension) {
         return UUID.randomUUID() + extension;
     }
@@ -32,8 +31,6 @@ class FileControllerTest extends AuthenticatedIntegrationTest {
             .statusCode(200);
         return content;
     }
-
-    // ---------------------------------------------------------------- upload
 
     @Test
     void uploadStoresTheFileAndDescribesIt() {
@@ -143,8 +140,6 @@ class FileControllerTest extends AuthenticatedIntegrationTest {
         }
     }
 
-    // ---------------------------------------------------------------- errors
-
     @Test
     void downloadingAFileThatDoesNotExistIsNotFound() {
         String name = uniqueName(".txt");
@@ -170,7 +165,6 @@ class FileControllerTest extends AuthenticatedIntegrationTest {
             .statusCode(500)
             .body("message", equalTo("Could not store file " + name + ". Please try Again!"));
 
-        // the upload directory of the tests is target/test-uploads, so "../" would land in target/
         assertFalse(Files.exists(Path.of("target", "escaped-" + tag + ".txt")));
     }
 

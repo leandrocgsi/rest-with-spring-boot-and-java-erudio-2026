@@ -16,9 +16,6 @@ import java.util.stream.Stream;
 @ContextConfiguration(initializers = AbstractIntegrationTest.Initializer.class)
 public class AbstractIntegrationTest {
 
-    /**
-     * The in-process SMTP server every integration test talks to instead of a real mail server.
-     */
     protected static GreenMail greenMail() {
         return Initializer.smtp;
     }
@@ -39,7 +36,6 @@ public class AbstractIntegrationTest {
         private static synchronized void startSmtp() {
             if (smtp.isRunning()) return;
             smtp.start();
-            // the mail sender always authenticates when it has credentials, and GreenMail only accepts known accounts
             smtp.setUser(SMTP_USERNAME, SMTP_PASSWORD);
             Runtime.getRuntime().addShutdownHook(new Thread(smtp::stop));
         }
@@ -53,7 +49,6 @@ public class AbstractIntegrationTest {
                     "spring.mail.port", String.valueOf(smtp.getSmtp().getPort()),
                     "spring.mail.username", SMTP_USERNAME,
                     "spring.mail.password", SMTP_PASSWORD,
-                    // GreenMail speaks plain SMTP: no STARTTLS
                     "spring.mail.properties.mail.smtp.auth", "true",
                     "spring.mail.properties.mail.smtp.starttls.enable", "false",
                     "spring.mail.properties.mail.smtp.starttls.required", "false"

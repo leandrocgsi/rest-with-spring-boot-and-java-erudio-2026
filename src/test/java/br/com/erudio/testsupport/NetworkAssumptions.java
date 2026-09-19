@@ -12,10 +12,6 @@ public final class NetworkAssumptions {
 
     private NetworkAssumptions() {}
 
-    /**
-     * The PDF templates download their images (logo, person photo) from GitHub while the report is generated,
-     * so the PDF tests are skipped, not failed, when that host cannot be reached.
-     */
     public static void assumeReportImagesAreReachable() {
         Assumptions.assumeTrue(isReachable(REPORT_IMAGES_HOST, 443),
             "PDF reports download images from " + REPORT_IMAGES_HOST + ", which is not reachable");

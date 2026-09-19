@@ -135,7 +135,6 @@
 			<artifactId>testcontainers-mysql</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- In-process SMTP server so the e-mail tests never talk to a real mail server -->
 		<dependency>
 			<groupId>com.icegreen</groupId>
 			<artifactId>greenmail</artifactId>
@@ -143,7 +142,6 @@
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<!-- Spring Boot already brings the same implementation as angus-mail -->
 					<groupId>org.eclipse.angus</groupId>
 					<artifactId>jakarta.mail</artifactId>
 				</exclusion>

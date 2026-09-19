@@ -11,10 +11,6 @@ import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
 
-/**
- * Base class for integration tests that call the secured endpoints: it signs in once and hands out
- * request specifications with the bearer token.
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public abstract class AuthenticatedIntegrationTest extends AbstractIntegrationTest {
 

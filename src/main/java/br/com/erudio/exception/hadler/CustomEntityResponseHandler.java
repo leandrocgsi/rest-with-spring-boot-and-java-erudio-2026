@@ -22,7 +22,6 @@ public class CustomEntityResponseHandler extends ResponseEntityExceptionHandler 
     @Override
     protected ResponseEntity<Object> createResponseEntity(
             Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
-        // Spring Framework 7 no longer defaults ProblemDetail.type to "about:blank", which drops it from the payload
         if (body instanceof ProblemDetail problemDetail && problemDetail.getType() == null) {
             problemDetail.setType(URI.create("about:blank"));
         }

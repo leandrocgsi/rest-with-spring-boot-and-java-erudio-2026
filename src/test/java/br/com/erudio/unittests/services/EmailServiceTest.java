@@ -62,8 +62,6 @@ class EmailServiceTest {
         return new MockMultipartFile("attachment", name, "text/plain", content.getBytes(UTF_8));
     }
 
-    // ---------------------------------------------------------------- simple e-mail
-
     @Test
     void sendSimpleEmailUsesTheSubjectAndBodyOfTheRequest() {
         service.sendSimpleEmail(request("ada@erudio.test", "Welcome", "<p>Hello Ada</p>"));
@@ -121,8 +119,6 @@ class EmailServiceTest {
         verify(emailSender).withSubject(DEFAULT_SUBJECT);
         verify(emailSender).withMessage("Only the body");
     }
-
-    // ---------------------------------------------------------------- e-mail with attachment
 
     @Test
     void sendEmailWithAttachmentUsesTheValuesOfTheRequestAndAttachesTheFile() {

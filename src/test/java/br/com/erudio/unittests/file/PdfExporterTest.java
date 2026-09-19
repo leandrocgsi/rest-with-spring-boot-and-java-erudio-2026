@@ -20,10 +20,6 @@ import static br.com.erudio.testsupport.NetworkAssumptions.assumeReportImagesAre
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * The templates download their images while the PDF is generated, so these tests are skipped when
- * raw.githubusercontent.com cannot be reached.
- */
 class PdfExporterTest {
 
     private final PdfExporter exporter = new PdfExporter();

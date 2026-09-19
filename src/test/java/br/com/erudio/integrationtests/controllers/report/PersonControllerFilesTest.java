@@ -29,9 +29,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Reports (CSV, XLSX and PDF exports) and the file import (mass creation) of the person endpoints.
- */
 class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
 
     private static final String BASE = "/api/person/v1";
@@ -48,9 +45,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
         createdIds.clear();
     }
 
-    // ---------------------------------------------------------------- helpers
-
-    /** The same page as the JSON listing, which is the reference for what an export must contain. */
     private static List<Integer> idsOfThePage(int page, int size, String direction) {
         return JsonPath.from(given().spec(authenticated())
             .queryParam("page", page).queryParam("size", size).queryParam("direction", direction)
@@ -124,7 +118,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
         }
     }
 
-    /** Sends the file, remembers the created people so they are deleted after the test, and returns the response. */
     private static io.restassured.response.ValidatableResponse massCreation(String name, byte[] content, String contentType) {
         return given().spec(authenticated())
             .multiPart("file", name, content, contentType)
@@ -146,8 +139,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
             .statusCode(200)
         .extract().path("page.totalElements");
     }
-
-    // ---------------------------------------------------------------- CSV report
 
     @Test
     void exportPageAsCsvHasOneLinePerPersonOfThePageInTheSameOrderAsTheListing() throws Exception {
@@ -200,8 +191,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
         assertTrue(parseCsv(export(CSV, 99999, 5, "asc"), EXPORT_HEADER).isEmpty());
     }
 
-    // ---------------------------------------------------------------- XLSX report
-
     @Test
     void exportPageAsXlsxHasTheSameRowsAsTheListing() throws Exception {
         byte[] bytes = export(XLSX, 0, 5, "asc");
@@ -239,8 +228,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
             .contentType(XLSX)
             .header("Content-Disposition", equalTo("attachment; filename=\"people_exported.xlsx\""));
     }
-
-    // ---------------------------------------------------------------- PDF reports (they need the network, see NetworkAssumptions)
 
     @Test
     void exportPageAsPdfIsAValidPdfWithThePeopleOfThePage() throws Exception {
@@ -284,11 +271,8 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
         assertTrue(pdfText(pdf).contains(firstName));
     }
 
-    // ---------------------------------------------------------------- export errors
-
     @Test
     void exportOnePersonThatDoesNotExistIsNotFound() {
-        // the error can only be rendered when the client also accepts JSON
         given().spec(authenticated())
             .header("Accept", PDF + ", application/json")
         .when()
@@ -300,7 +284,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
 
     @Test
     void exportOnePersonThatDoesNotExistAsksingOnlyForPdfGetsAnEmptyForbidden() {
-        // the error body cannot be rendered as a PDF, and the error dispatch is not allowed by the security rules
         given().spec(authenticated())
             .header("Accept", PDF)
         .when()
@@ -335,8 +318,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
         given().spec(anonymous()).header("Accept", CSV).get(BASE + "/exportPage").then().statusCode(403);
         given().spec(anonymous()).header("Accept", PDF).get(BASE + "/export/1").then().statusCode(403);
     }
-
-    // ---------------------------------------------------------------- mass creation from CSV
 
     @Test
     void massCreationFromACsvCreatesEveryPersonOfTheFile() {
@@ -391,8 +372,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
         assertEquals(0, peopleNamed("imp" + tag));
     }
 
-    // ---------------------------------------------------------------- mass creation from XLSX
-
     @Test
     void massCreationFromAnXlsxCreatesEveryPersonOfTheFile() throws Exception {
         String tag = tag();
@@ -432,8 +411,6 @@ class PersonControllerFilesTest extends AuthenticatedIntegrationTest {
             .body("List.item.firstName", equalTo("Imp" + tag));
         response.extract().xmlPath().getList("List.item.id", Long.class).forEach(createdIds::add);
     }
-
-    // ---------------------------------------------------------------- mass creation errors
 
     @Test
     void massCreationOfAnUnsupportedFileTypeIsRejected() {

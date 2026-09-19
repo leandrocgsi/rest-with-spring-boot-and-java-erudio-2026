@@ -54,9 +54,6 @@ public class EmailSender implements Serializable {
         return attach(fileDir, null);
     }
 
-    /**
-     * @param attachmentName the name the recipient sees; the name of the file itself when blank
-     */
     public EmailSender attach(String fileDir, String attachmentName) {
         this.attachment = new File(fileDir);
         this.attachmentName = StringUtils.hasText(attachmentName) ? attachmentName : attachment.getName();

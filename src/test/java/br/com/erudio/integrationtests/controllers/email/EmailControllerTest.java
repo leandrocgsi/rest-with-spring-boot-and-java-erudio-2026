@@ -19,17 +19,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * The application talks to the in-process SMTP server started by {@link AbstractIntegrationTest},
- * so these tests never reach a real mail server.
- */
 class EmailControllerTest extends AuthenticatedIntegrationTest {
 
     private static final String BASE = "/api/email/v1";
     private static final String ATTACHMENT_URL = BASE + "/withAttachment";
     private static final String SENDER = "sender@erudio.test";
 
-    // the "email:" defaults of application.yml
     private static final String DEFAULT_SUBJECT = "Default Subject";
     private static final String DEFAULT_MESSAGE = "Default Message";
 
@@ -37,8 +32,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
     void emptyTheMailboxes() throws Exception {
         greenMail().purgeEmailFromAllMailboxes();
     }
-
-    // ---------------------------------------------------------------- helpers
 
     private static void sendSimple(Map<String, Object> request) {
         given().spec(authenticated())
@@ -72,8 +65,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
     private static List<String> recipientsOf(MimeMessage message) throws Exception {
         return Arrays.stream(message.getRecipients(Message.RecipientType.TO)).map(Address::toString).toList();
     }
-
-    // ---------------------------------------------------------------- simple e-mail with the values of the request
 
     @Test
     void theSubjectAndTheBodyOfTheRequestArriveAsTheyWereSent() throws Exception {
@@ -109,8 +100,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
             assertEquals("Team", message.getSubject());
         }
     }
-
-    // ---------------------------------------------------------------- simple e-mail: the defaults are only a fallback
 
     @Test
     void theDefaultsAreUsedOnlyForTheFieldsTheRequestLeavesOut() throws Exception {
@@ -148,8 +137,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
         assertEquals(DEFAULT_MESSAGE, MailContent.of(message).html());
     }
 
-    // ---------------------------------------------------------------- simple e-mail: errors
-
     @Test
     void anInvalidRecipientFailsAndNothingIsDelivered() {
         given().spec(authenticated())
@@ -176,8 +163,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
         assertEquals(0, greenMail().getReceivedMessages().length);
     }
 
-    // ---------------------------------------------------------------- e-mail with attachment
-
     @Test
     void theAttachmentArrivesWithTheSubjectAndBodyOfTheRequest() throws Exception {
         byte[] report = "id,name\n1,Ada\n2,Alan\n".getBytes(UTF_8);
@@ -194,7 +179,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
         MailContent content = MailContent.of(message);
         assertEquals("<p>The report is attached.</p>", content.html());
         assertEquals(List.of("report.csv"), List.copyOf(content.attachments().keySet()));
-        // a text attachment is sent as text, and SMTP turns its line breaks into CRLF (binary files are exact, see below)
         assertEquals(
             new String(report, UTF_8),
             new String(content.attachments().get("report.csv"), UTF_8).replace("\r\n", "\n"));
@@ -233,8 +217,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
         assertEquals("Only my subject", message.getSubject());
         assertEquals(DEFAULT_MESSAGE, MailContent.of(message).html());
     }
-
-    // ---------------------------------------------------------------- e-mail with attachment: errors
 
     @Test
     void anInvalidRequestJsonIsRejectedAndNothingIsDelivered() {
@@ -294,8 +276,6 @@ class EmailControllerTest extends AuthenticatedIntegrationTest {
         .then()
             .statusCode(415);
     }
-
-    // ---------------------------------------------------------------- security
 
     @Test
     void bothEndpointsRequireAuthentication() {

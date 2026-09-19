@@ -1,4 +1,2 @@
-# The image only needs the jar built by Maven (see the Dockerfile).
-# Everything else stays out of the build context (sources, .git, .claude, IDE files...).
 *
 !target/*.jar

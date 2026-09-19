@@ -3,9 +3,6 @@ package br.com.erudio.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Subject and message used when the request does not bring its own ({@code email.subject} / {@code email.message}).
- */
 @Configuration
 @ConfigurationProperties(prefix = "email")
 public class EmailDefaultsConfig {

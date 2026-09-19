@@ -9,7 +9,12 @@ services:
       MYSQL_PASSWORD: admin123
       MYSQL_DATABASE: rest_with_spring_boot_erudio
     ports:
-      - "3308:3306"   # expose on 3308 to avoid conflicts with local MySQL
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padmin123"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     networks:
       - erudio-network
 
@@ -27,7 +32,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - erudio-network
 

@@ -10,9 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Flattens a (possibly nested multipart) e-mail into its HTML body and its attachments.
- */
 public final class MailContent {
 
     private final List<String> htmlBodies = new ArrayList<>();

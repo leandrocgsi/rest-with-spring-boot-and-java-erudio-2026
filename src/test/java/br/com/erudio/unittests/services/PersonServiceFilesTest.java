@@ -41,9 +41,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
-/**
- * The parts of {@link PersonService} that produce and consume files: report exports and the mass creation import.
- */
 @ExtendWith(MockitoExtension.class)
 class PersonServiceFilesTest {
 
@@ -89,8 +86,6 @@ class PersonServiceFilesTest {
         return new MockMultipartFile("file", name, CSV, content.getBytes(UTF_8));
     }
 
-    // ---------------------------------------------------------------- export a page
-
     @Test
     void exportPageExportsTheRequestedPageInTheFormatOfTheAcceptHeader() throws Exception {
         Pageable pageable = PageRequest.of(0, 3, Sort.by("firstName"));
@@ -119,8 +114,6 @@ class PersonServiceFilesTest {
         assertEquals("Error during file export!", exception.getMessage());
         assertInstanceOf(BadRequestException.class, exception.getCause());
     }
-
-    // ---------------------------------------------------------------- export one person
 
     @Test
     void exportPersonExportsThePersonThatWasFound() throws Exception {
@@ -159,8 +152,6 @@ class PersonServiceFilesTest {
         assertEquals("Error during file export!", exception.getMessage());
         assertEquals("template broken", exception.getCause().getMessage());
     }
-
-    // ---------------------------------------------------------------- mass creation
 
     @Test
     void massCreationSavesEveryPersonOfTheFileAndReturnsThemWithLinks() throws Exception {

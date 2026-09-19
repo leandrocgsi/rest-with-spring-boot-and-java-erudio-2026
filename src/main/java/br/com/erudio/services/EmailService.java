@@ -37,7 +37,6 @@ public class EmailService {
     public void setEmailWithAttachment(String emailRequestJson, MultipartFile attachment) {
         File tempFile = null;
         try {
-            // Jackson 2 defaults: unknown properties are rejected, as they were before Jackson 3
             EmailRequestDTO emailRequest = JsonMapper.builderWithJackson2Defaults().build()
                 .readValue(emailRequestJson, EmailRequestDTO.class);
             tempFile = File.createTempFile("attachment", attachment.getOriginalFilename());

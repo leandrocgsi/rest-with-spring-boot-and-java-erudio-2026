@@ -3,7 +3,6 @@ server:
 cors:
   originPatterns: http://localhost:8080,http://localhost:3000,https://www.erudio.com.br
 file:
-  # inside target/ so the tests do not write to the drive root; wiped by "mvn clean"
   upload-dir: target/test-uploads
 security:
   jwt:
@@ -19,14 +18,12 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
-    # Jackson 3 changed several defaults (property order, date format); keep the Jackson 2 output
     use-jackson2-defaults: true
   jpa:
     hibernate:
       ddl-auto: none
     properties:
       hibernate:
-        # Hibernate switches this check off by itself when Bean Validation is on the classpath (springdoc 3 brings it)
         check_nullability: true
     show-sql: false
     open-in-view: false
@@ -52,7 +49,6 @@ logging:
     # br.com.erudio: DEBUG
 springdoc:
   api-docs:
-    # springdoc 3 generates OpenAPI 3.1 by default; keep the 3.0 document that was served before
     version: openapi_3_0
   paths-to-match:
     - /auth/**
