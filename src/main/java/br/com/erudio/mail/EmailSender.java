@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public class EmailSender implements Serializable {
     private String body;
     private ArrayList<InternetAddress> recipients = new ArrayList<>();
     private File attachment;
+    private String attachmentName;
 
     public EmailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -49,7 +51,15 @@ public class EmailSender implements Serializable {
     }
 
     public EmailSender attach(String fileDir) {
+        return attach(fileDir, null);
+    }
+
+    /**
+     * @param attachmentName the name the recipient sees; the name of the file itself when blank
+     */
+    public EmailSender attach(String fileDir, String attachmentName) {
         this.attachment = new File(fileDir);
+        this.attachmentName = StringUtils.hasText(attachmentName) ? attachmentName : attachment.getName();
         return this;
     }
 
@@ -62,7 +72,7 @@ public class EmailSender implements Serializable {
             helper.setSubject(subject);
             helper.setText(body, true);
             if (attachment != null) {
-                helper.addAttachment(attachment.getName(), attachment);
+                helper.addAttachment(attachmentName, attachment);
             }
             mailSender.send(message);
             logger.info("Email sent to %s with the subject '%s'%n", to, subject);
@@ -79,6 +89,7 @@ public class EmailSender implements Serializable {
         this.body = null;
         this.recipients = null;
         this.attachment = null;
+        this.attachmentName = null;
     }
 
     // email1@gmail.com;email2@gmail.com,email3@gmail.com

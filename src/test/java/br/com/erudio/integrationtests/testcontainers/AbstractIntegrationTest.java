@@ -25,6 +25,9 @@ public class AbstractIntegrationTest {
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+        static final String SMTP_USERNAME = "sender@erudio.test";
+        static final String SMTP_PASSWORD = "secret";
+
         static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:9.1.0");
 
         static GreenMail smtp = new GreenMail(ServerSetupTest.SMTP.dynamicPort());
@@ -36,6 +39,8 @@ public class AbstractIntegrationTest {
         private static synchronized void startSmtp() {
             if (smtp.isRunning()) return;
             smtp.start();
+            // the mail sender always authenticates when it has credentials, and GreenMail only accepts known accounts
+            smtp.setUser(SMTP_USERNAME, SMTP_PASSWORD);
             Runtime.getRuntime().addShutdownHook(new Thread(smtp::stop));
         }
 
@@ -46,10 +51,10 @@ public class AbstractIntegrationTest {
                     "spring.datasource.password", mysql.getPassword(),
                     "spring.mail.host", "localhost",
                     "spring.mail.port", String.valueOf(smtp.getSmtp().getPort()),
-                    "spring.mail.username", "sender@erudio.test",
-                    "spring.mail.password", "secret",
-                    // GreenMail speaks plain SMTP: no authentication and no STARTTLS
-                    "spring.mail.properties.mail.smtp.auth", "false",
+                    "spring.mail.username", SMTP_USERNAME,
+                    "spring.mail.password", SMTP_PASSWORD,
+                    // GreenMail speaks plain SMTP: no STARTTLS
+                    "spring.mail.properties.mail.smtp.auth", "true",
                     "spring.mail.properties.mail.smtp.starttls.enable", "false",
                     "spring.mail.properties.mail.smtp.starttls.required", "false"
             );
