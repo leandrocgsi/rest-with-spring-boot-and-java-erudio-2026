@@ -1,10 +1,12 @@
 package br.com.erudio.services;
 
 import br.com.erudio.config.EmailConfig;
+import br.com.erudio.config.EmailDefaultsConfig;
 import br.com.erudio.data.dto.request.EmailRequestDTO;
 import br.com.erudio.mail.EmailSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
@@ -21,11 +23,14 @@ public class EmailService {
     @Autowired
     private EmailConfig emailConfigs;
 
+    @Autowired
+    private EmailDefaultsConfig emailDefaults;
+
     public void sendSimpleEmail(EmailRequestDTO emailRequest) {
         emailSender
             .to(emailRequest.getTo())
-            .withSubject(emailRequest.getSubject())
-            .withMessage(emailRequest.getSubject())
+            .withSubject(subjectOf(emailRequest))
+            .withMessage(messageOf(emailRequest))
             .send(emailConfigs);
     }
 
@@ -38,8 +43,8 @@ public class EmailService {
 
             emailSender
                 .to(emailRequest.getTo())
-                .withSubject(emailRequest.getSubject())
-                .withMessage(emailRequest.getSubject())
+                .withSubject(subjectOf(emailRequest))
+                .withMessage(messageOf(emailRequest))
                 .attach(tempFile.getAbsolutePath())
                 .send(emailConfigs);
 
@@ -51,5 +56,13 @@ public class EmailService {
             if (tempFile != null && tempFile.exists()) tempFile.delete();
         }
 
+    }
+
+    private String subjectOf(EmailRequestDTO emailRequest) {
+        return StringUtils.hasText(emailRequest.getSubject()) ? emailRequest.getSubject() : emailDefaults.getSubject();
+    }
+
+    private String messageOf(EmailRequestDTO emailRequest) {
+        return StringUtils.hasText(emailRequest.getBody()) ? emailRequest.getBody() : emailDefaults.getMessage();
     }
 }

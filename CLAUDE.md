@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Spring Boot 4.1.1 / Java 25 REST API (Maven, base package `br.com.erudio`) from the Erudio Udemy course "REST API's RESTful do 0 à AWS e GCP". The README is course marketing only. The app manages People and Books, with JWT auth, file upload/download, CSV/XLSX/PDF import/export and email sending. `Collections/` holds the Postman collection and environment.
+Spring Boot 4.1.1 / Java 25 REST API (Maven, base package `br.com.erudio`) from the Erudio course "Formação Spring Boot 2026: do Zero ao Deploy na AWS e GCP com Java, Docker e Kubernetes". The README is course marketing only. The app manages People and Books, with JWT auth, file upload/download, CSV/XLSX/PDF import/export and email sending. `Collections/` holds the Postman collection and environment.
 
 The stack was upgraded from Spring Boot 3.4.1 / Java 21 with the requirement that the API behaves exactly as before (same status codes, payloads, field order, date formats, validation). Several settings below exist only for that reason; do not "clean them up".
 
@@ -58,7 +58,7 @@ Standard layering: `controllers` → `services` → `repository` (Spring Data JP
 - `config/JacksonConfig` covers what that flag does not: it moves the HATEOAS `links` after the DTO's own properties (Jackson 3 puts inherited ones first; `CollectionModel` is excluded because it always had `links` first), and it builds the YAML converter (declaration order, dates as epoch milliseconds, unknown properties ignored). Spring Boot only configures the JSON and XML mappers.
 - `CustomEntityResponseHandler.createResponseEntity` sets `type: about:blank` on every `ProblemDetail`, because Spring Framework 7 no longer defaults it and the field would disappear from the error payloads.
 - `spring.jpa.properties.hibernate.check_nullability: true` is required. springdoc 3 pulls in Bean Validation, and Hibernate then silently turns its own not-null check off, so a `Book` with a null `title` was persisted instead of failing.
-- `springdoc.api-docs.version: openapi_3_0` keeps the OpenAPI 3.0 document (springdoc 3 defaults to 3.1). The neighbouring `spring-doc:` block uses a prefix springdoc never reads (it binds `springdoc.*`), so it has no effect; renaming it to `springdoc:` would start applying its `paths-to-match` and `use-root-path` and change behavior.
+- `springdoc.api-docs.version: openapi_3_0` keeps the OpenAPI 3.0 document (springdoc 3 defaults to 3.1). `paths-to-match` and `swagger-ui.use-root-path` live in the same `springdoc:` block (they used to sit under a `spring-doc:` key springdoc never read; fixing it changed nothing observable).
 - Boot 4 split its auto-configuration into modules, so the raw libraries no longer auto-configure. Keep `spring-boot-starter-flyway` (migrations do not run with plain `flyway-core`), `spring-boot-starter-hateoas` (springdoc fails to start without it) and `spring-boot-starter-webmvc`.
 
 ## Dependency versions

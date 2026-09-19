@@ -3,7 +3,8 @@ server:
 cors:
   originPatterns: http://localhost:8080,http://localhost:3000,https://www.erudio.com.br
 file:
-  upload-dir: /Code/UploadDir
+  # inside target/ so the tests do not write to the drive root; wiped by "mvn clean"
+  upload-dir: target/test-uploads
 security:
   jwt:
     token:

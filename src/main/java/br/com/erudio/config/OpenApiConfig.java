@@ -13,9 +13,9 @@ public class OpenApiConfig {
     OpenAPI customOpenAPI(){
         return new OpenAPI()
             .info(new Info()
-                .title("REST API's RESTful from 0 with Java, Spring Boot, Kubernetes and Docker")
+                .title("Formação Spring Boot 2026: do Zero ao Deploy na AWS e GCP com Java, Docker e Kubernetes")
                     .version("v1")
-                    .description("REST API's RESTful from 0 with Java, Spring Boot, Kubernetes and Docker")
+                    .description("Formação Spring Boot 2026: do Zero ao Deploy na AWS e GCP com Java, Docker e Kubernetes")
                     .termsOfService("https://pub.erudio.com.br/meus-cursos")
                     .license(new License()
                         .name("Apache 2.0")
