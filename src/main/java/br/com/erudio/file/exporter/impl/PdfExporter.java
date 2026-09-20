@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class PdfExporter implements PersonExporter {
@@ -23,14 +24,27 @@ public class PdfExporter implements PersonExporter {
     @Autowired
     private QRCodeService service;
 
+    private final Map<String, JasperReport> reports = new ConcurrentHashMap<>();
+
+    private JasperReport report(String template) throws Exception {
+        JasperReport cached = reports.get(template);
+        if (cached != null) {
+            return cached;
+        }
+        String path = "/templates/" + template;
+        try (InputStream stream = getClass().getResourceAsStream(path)) {
+            if (stream == null) {
+                throw new RuntimeException("Template file not found: " + path);
+            }
+            JasperReport compiled = JasperCompileManager.compileReport(stream);
+            reports.put(template, compiled);
+            return compiled;
+        }
+    }
+
     @Override
     public Resource exportPeople(List<PersonDTO> people) throws Exception {
-        InputStream inputStream = getClass().getResourceAsStream("/templates/people.jrxml");
-        if (inputStream == null) {
-            throw new RuntimeException("Template file not found: /templates/people.jrxml");
-        }
-
-        JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+        JasperReport jasperReport = report("people.jrxml");
 
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(people);
         Map<String, Object> parameters = new HashMap<>();
@@ -45,18 +59,8 @@ public class PdfExporter implements PersonExporter {
 
     @Override
     public Resource exportPerson(PersonDTO person) throws Exception {
-        InputStream mainTemplateStream = getClass().getResourceAsStream("/templates/person.jrxml");
-        if (mainTemplateStream == null) {
-            throw new RuntimeException("Template file not found: /templates/person.jrxml");
-        }
-
-        InputStream subReportStream = getClass().getResourceAsStream("/templates/books.jrxml");
-        if (subReportStream == null) {
-            throw new RuntimeException("Template file not found: /templates/books.jrxml");
-        }
-
-        JasperReport mainReport = JasperCompileManager.compileReport(mainTemplateStream);
-        JasperReport subReport = JasperCompileManager.compileReport(subReportStream);
+        JasperReport mainReport = report("person.jrxml");
+        JasperReport subReport = report("books.jrxml");
 
         InputStream qrCodeStream = service.generateQRCode(person.getProfileUrl(), 200, 200);
 

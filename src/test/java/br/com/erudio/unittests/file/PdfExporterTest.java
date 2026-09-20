@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static br.com.erudio.testsupport.NetworkAssumptions.assumeReportImagesAreReachable;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -113,6 +116,45 @@ class PdfExporterTest {
         ParsedPdf pdf = read(resource);
         assertEquals(1, pdf.pages());
         assertFalse(pdf.text().contains("Ayrton"), pdf.text());
+    }
+
+    @Test
+    void exportPeopleGivesTheSameResultWhenTheCompiledReportIsReused() throws Exception {
+        List<PersonDTO> people = List.of(person(1L, "Ayrton", "Senna"));
+
+        ParsedPdf first = read(exporter.exportPeople(people));
+        ParsedPdf second = read(exporter.exportPeople(people));
+
+        assertEquals(first.pages(), second.pages());
+        assertTrue(second.text().contains("Ayrton"), second.text());
+    }
+
+    @Test
+    void exportPeopleIsSafeToCallFromSeveralThreadsAtTheSameTime() throws Exception {
+        List<PersonDTO> people = List.of(person(1L, "Ayrton", "Senna"));
+
+        try (ExecutorService pool = Executors.newFixedThreadPool(8)) {
+            List<Future<ParsedPdf>> results = new ArrayList<>();
+            for (int i = 0; i < 16; i++) {
+                results.add(pool.submit(() -> read(exporter.exportPeople(people))));
+            }
+            for (Future<ParsedPdf> result : results) {
+                assertTrue(result.get().text().contains("Ayrton"));
+            }
+        }
+    }
+
+    @Test
+    void exportPersonGivesTheSameResultWhenTheCompiledReportsAreReused() throws Exception {
+        PersonDTO person = person(1L, "Ayrton", "Senna");
+        person.setProfileUrl("https://en.wikipedia.org/wiki/Ayrton_Senna");
+        person.setBooks(List.of(book(1L, "Clean Code", "Robert C. Martin")));
+
+        ParsedPdf first = read(exporter.exportPerson(person));
+        ParsedPdf second = read(exporter.exportPerson(person));
+
+        assertEquals(first.pages(), second.pages());
+        assertTrue(second.text().contains("Clean Code"), second.text());
     }
 
     @Test
