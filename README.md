@@ -1,10 +1,10 @@
 # [Formação Spring Boot 2026: do Zero ao Deploy na AWS e GCP com Java, Docker e Kubernetes](https://pub.erudio.com.br/formacao-spring-boot-2026-do-zero-ao-continuous-deployment-na-aws-e-gcp-com-java-docker-e-kubernetes?utm_source=github&utm_medium=organic&utm_campaign=readme&utm_content=repo-oficial)
 ### [Desenvolva uma API REST do zero absoluto atendendo todos os níveis de maturidade RESTful e implante na AWS + React JS](https://pub.erudio.com.br/formacao-spring-boot-2026-do-zero-ao-continuous-deployment-na-aws-e-gcp-com-java-docker-e-kubernetes?utm_source=github&utm_medium=organic&utm_campaign=readme&utm_content=repo-oficial)
 
-[![Continuous Integration and Delivery with Github Actions](https://github.com/leandrocgsi/rest-with-spring-boot-and-java-erudio/actions/workflows/continuous-deployment.yml/badge.svg)](https://github.com/leandrocgsi/rest-with-spring-boot-and-java-erudio/actions/workflows/continuous-deployment.yml)
+[![Continuous Integration and Delivery with Github Actions](https://github.com/leandrocgsi/rest-with-spring-boot-and-java-erudio-2026/actions/workflows/continuous-deployment.yml/badge.svg)](https://github.com/leandrocgsi/rest-with-spring-boot-and-java-erudio-2026/actions/workflows/continuous-deployment.yml)
 [![Docker Hub Repo](https://img.shields.io/docker/pulls/leandrocgsi/rest-with-spring-boot-erudio.svg)](https://hub.docker.com/repository/docker/leandrocgsi/rest-with-spring-boot-erudio)
-![Forks](https://img.shields.io/github/forks/leandrocgsi/rest-with-spring-boot-and-java-erudio)
-![Stars](https://img.shields.io/github/stars/leandrocgsi/rest-with-spring-boot-and-java-erudio)
+![Forks](https://img.shields.io/github/forks/leandrocgsi/rest-with-spring-boot-and-java-erudio-2026)
+![Stars](https://img.shields.io/github/stars/leandrocgsi/rest-with-spring-boot-and-java-erudio-2026)
 [![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=ZJ4NQJXEKQ63A)
 
 [![Image](https://raw.githubusercontent.com/leandrocgsi/blog-images/refs/heads/main/formacoes_github/07-rest-java.png "Formação Spring Boot 2026: do Zero ao Deploy na AWS e GCP com Java, Docker e Kubernetes")](https://pub.erudio.com.br/formacao-spring-boot-2026-do-zero-ao-continuous-deployment-na-aws-e-gcp-com-java-docker-e-kubernetes?utm_source=github&utm_medium=organic&utm_campaign=readme&utm_content=repo-oficial)
