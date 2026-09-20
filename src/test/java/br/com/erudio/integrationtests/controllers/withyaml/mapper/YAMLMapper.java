@@ -19,7 +19,7 @@ public class YAMLMapper implements ObjectMapper {
     @Override
     public Object deserialize(ObjectMapperDeserializationContext context) {
         var content = context.getDataToDeserialize().asString();
-        Class type = (Class) context.getType();
+        Class<?> type = (Class<?>) context.getType();
         try {
             return mapper.readValue(content, type);
         } catch (JacksonException e) {

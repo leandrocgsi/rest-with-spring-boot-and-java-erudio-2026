@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.mysql.MySQLContainer;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -61,7 +62,7 @@ public class AbstractIntegrationTest {
             startSmtp();
             ConfigurableEnvironment environment = applicationContext.getEnvironment();
             MapPropertySource testcontainers = new MapPropertySource("testcontainers",
-                    (Map) createConnectionConfiguration());
+                    new HashMap<String, Object>(createConnectionConfiguration()));
             environment.getPropertySources().addFirst(testcontainers);
         }
     }

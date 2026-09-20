@@ -1,10 +1,8 @@
 package br.com.erudio.controllers;
 
 import br.com.erudio.controllers.docs.AuthControllerDocs;
-import br.com.erudio.data.dto.PersonDTO;
 import br.com.erudio.data.dto.security.AccountCredentialsDTO;
 import br.com.erudio.services.AuthService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

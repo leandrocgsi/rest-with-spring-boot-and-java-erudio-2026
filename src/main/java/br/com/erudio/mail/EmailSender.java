@@ -13,12 +13,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 @Component
-public class EmailSender implements Serializable {
+public class EmailSender {
 
     Logger logger = LoggerFactory.getLogger(EmailSender.class);
 

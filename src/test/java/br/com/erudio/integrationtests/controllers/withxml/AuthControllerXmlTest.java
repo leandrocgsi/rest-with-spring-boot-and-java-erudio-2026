@@ -2,7 +2,6 @@ package br.com.erudio.integrationtests.controllers.withxml;
 
 import br.com.erudio.config.TestConfigs;
 import br.com.erudio.integrationtests.dto.AccountCredentialsDTO;
-import br.com.erudio.integrationtests.dto.PersonDTO;
 import br.com.erudio.integrationtests.dto.TokenDTO;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import tools.jackson.core.JacksonException;

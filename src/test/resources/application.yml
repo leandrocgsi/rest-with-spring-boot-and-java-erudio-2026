@@ -17,8 +17,6 @@ spring:
     name: rest-with-spring-boot-and-java-erudio
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-  jackson:
-    use-jackson2-defaults: true
   jpa:
     hibernate:
       ddl-auto: none
@@ -50,7 +48,6 @@ logging:
 springdoc:
   api-docs:
     enabled: true
-    version: openapi_3_0
   paths-to-match:
     - /auth/**
     - /api/**/v1/**

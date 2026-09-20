@@ -1,10 +1,8 @@
 package br.com.erudio.services;
 
-import br.com.erudio.data.dto.PersonDTO;
 import br.com.erudio.data.dto.security.AccountCredentialsDTO;
 import br.com.erudio.data.dto.security.TokenDTO;
 import br.com.erudio.exception.RequiredObjectIsNullException;
-import br.com.erudio.model.Person;
 import br.com.erudio.model.User;
 import br.com.erudio.repository.UserRepository;
 import br.com.erudio.security.jwt.JwtTokenProvider;
@@ -22,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static br.com.erudio.mapper.ObjectMapper.parseObject;
 
 @Service
 public class AuthService {

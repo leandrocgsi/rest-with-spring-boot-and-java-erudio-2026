@@ -5,6 +5,7 @@ import br.com.erudio.exception.InvalidJwtAuthenticationException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,7 +58,12 @@ public class JwtTokenProvider {
         }
 
         JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = verifier.verify(token);
+        DecodedJWT decodedJWT;
+        try {
+            decodedJWT = verifier.verify(token);
+        } catch (JWTVerificationException e) {
+            throw new InvalidJwtAuthenticationException("Expired or Invalid JWT Token!");
+        }
 
         String username = decodedJWT.getSubject();
         List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
@@ -113,8 +119,8 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token){
-        DecodedJWT decodedJWT = decodedToken(token);
         try {
+            DecodedJWT decodedJWT = decodedToken(token);
             if(decodedJWT.getExpiresAt().before(new Date())) {
                 return false;
             }

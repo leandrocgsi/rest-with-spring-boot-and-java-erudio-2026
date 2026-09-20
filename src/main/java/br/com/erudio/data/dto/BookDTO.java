@@ -1,6 +1,5 @@
 package br.com.erudio.data.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -37,7 +36,6 @@ public class BookDTO extends RepresentationModel<BookDTO> implements Serializabl
         this.author = author;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public LocalDate getLaunchDate() {
         return launchDate;
     }
