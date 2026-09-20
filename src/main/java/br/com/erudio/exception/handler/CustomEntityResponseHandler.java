@@ -1,4 +1,4 @@
-package br.com.erudio.exception.hadler;
+package br.com.erudio.exception.handler;
 
 import br.com.erudio.exception.*;
 import org.springframework.http.HttpHeaders;
