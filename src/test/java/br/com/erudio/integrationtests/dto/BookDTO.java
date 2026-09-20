@@ -1,9 +1,10 @@
 package br.com.erudio.integrationtests.dto;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @XmlRootElement
@@ -13,7 +14,7 @@ public class BookDTO implements Serializable {
 
     private Long id;
     private String author;
-    private Date launchDate;
+    private LocalDate launchDate;
     private Double price;
     private String title;
 
@@ -35,11 +36,12 @@ public class BookDTO implements Serializable {
         this.author = author;
     }
 
-    public Date getLaunchDate() {
+    @XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
+    public LocalDate getLaunchDate() {
         return launchDate;
     }
 
-    public void setLaunchDate(Date launchDate) {
+    public void setLaunchDate(LocalDate launchDate) {
         this.launchDate = launchDate;
     }
 

@@ -21,7 +21,7 @@ public class CsvImporter implements FileImporter {
                 .setSkipHeaderRecord(true)
                 .setIgnoreEmptyLines(true)
                 .setTrim(true)
-                .build();
+                .get();
 
         Iterable<CSVRecord> records = format.parse(new InputStreamReader(inputStream));
         return parseRecordsToPersonDTOs(records);

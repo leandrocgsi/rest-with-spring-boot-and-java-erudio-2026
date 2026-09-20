@@ -1,9 +1,12 @@
 package br.com.erudio.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.converter.yaml.JacksonYamlHttpMessageConverter;
 import tools.jackson.databind.BeanDescription;
@@ -56,6 +59,13 @@ public class JacksonConfig {
                 .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
                 .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .addMixIn(EntityModel.class, EntityModelYamlMixin.class)
                 .addModule(hateoasLinksLastModule)));
+    }
+
+    private abstract static class EntityModelYamlMixin {
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        abstract Links getLinks();
     }
 }

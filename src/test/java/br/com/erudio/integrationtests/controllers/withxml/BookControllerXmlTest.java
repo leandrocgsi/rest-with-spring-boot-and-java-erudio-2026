@@ -18,7 +18,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -226,6 +226,6 @@ class BookControllerXmlTest extends AbstractIntegrationTest {
         book.setTitle("Docker Deep Dive");
         book.setAuthor("Nigel Poulton");
         book.setPrice(Double.valueOf(55.99));
-        book.setLaunchDate(new Date());
+        book.setLaunchDate(LocalDate.now());
     }
 }

@@ -3,7 +3,7 @@ package br.com.erudio.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -20,8 +20,7 @@ public class Book implements Serializable {
     private String author;
 
     @Column(name = "launch_date", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date launchDate;
+    private LocalDate launchDate;
 
     @Column(nullable = false)
     private Double price;
@@ -47,11 +46,11 @@ public class Book implements Serializable {
         this.author = author;
     }
 
-    public Date getLaunchDate() {
+    public LocalDate getLaunchDate() {
         return launchDate;
     }
 
-    public void setLaunchDate(Date launchDate) {
+    public void setLaunchDate(LocalDate launchDate) {
         this.launchDate = launchDate;
     }
 

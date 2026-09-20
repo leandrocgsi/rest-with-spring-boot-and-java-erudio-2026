@@ -24,7 +24,7 @@ public class CsvExporter implements PersonExporter {
         CSVFormat csvFormat = CSVFormat.Builder.create()
                 .setHeader("ID", "First Name", "Last Name", "Address", "Gender", "Enabled")
                 .setSkipHeaderRecord(false)
-                .build();
+                .get();
 
         try (CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)){
             for(PersonDTO person : people) {

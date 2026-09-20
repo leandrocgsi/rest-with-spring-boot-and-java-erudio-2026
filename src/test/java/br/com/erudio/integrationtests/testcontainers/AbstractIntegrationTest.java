@@ -7,8 +7,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.mysql.MySQLContainer;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -25,7 +25,7 @@ public class AbstractIntegrationTest {
         static final String SMTP_USERNAME = "sender@erudio.test";
         static final String SMTP_PASSWORD = "secret";
 
-        static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:9.1.0");
+        static MySQLContainer mysql = new MySQLContainer("mysql:9.1.0").withConfigurationOverride("mysql-default-conf");
 
         static GreenMail smtp = new GreenMail(ServerSetupTest.SMTP.dynamicPort());
 

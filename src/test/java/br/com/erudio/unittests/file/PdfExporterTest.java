@@ -12,8 +12,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static br.com.erudio.testsupport.NetworkAssumptions.assumeReportImagesAreReachable;
@@ -47,7 +47,7 @@ class PdfExporterTest {
         book.setTitle(title);
         book.setAuthor(author);
         book.setPrice(49.9);
-        book.setLaunchDate(new Date(1_511_963_405_878L));
+        book.setLaunchDate(LocalDate.of(2017, 11, 29));
         return book;
     }
 

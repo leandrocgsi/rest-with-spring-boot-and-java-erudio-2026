@@ -1,7 +1,7 @@
 package br.com.erudio.unittests.mapper.mocks;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import br.com.erudio.data.dto.BookDTO;
@@ -38,7 +38,7 @@ public class MockBook {
         Book book = new Book();
         book.setId(number.longValue());
         book.setAuthor("Some Author" + number);
-        book.setLaunchDate(new Date());
+        book.setLaunchDate(LocalDate.now());
         book.setPrice(25D);
         book.setTitle("Some Title" + number);
         return book;
@@ -48,7 +48,7 @@ public class MockBook {
         BookDTO book = new BookDTO();
         book.setId(number.longValue());
         book.setAuthor("Some Author" + number);
-        book.setLaunchDate(new Date());
+        book.setLaunchDate(LocalDate.now());
         book.setPrice(25D);
         book.setTitle("Some Title" + number);
         return book;
