@@ -1,41 +1,52 @@
 package br.com.erudio.services;
 
-import br.com.erudio.config.FileStorageConfig;
+import br.com.erudio.config.AwsS3Properties;
 import br.com.erudio.exception.FileNotFoundException;
 import br.com.erudio.exception.FileStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.File;
 
 @Service
 public class FileStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
 
-    private final Path fileStorageLocation;
+    private final S3Client s3Client;
+    private final String bucket;
 
     @Autowired
-    public FileStorageService(FileStorageConfig fileStorageConfig) {
-        Path path = Paths.get(fileStorageConfig.getUploadDir()).toAbsolutePath()
-                .toAbsolutePath().normalize();
+    public FileStorageService(S3Client s3Client, AwsS3Properties properties) {
+        this.s3Client = s3Client;
+        this.bucket = properties.getBucket();
+        createBucketIfMissing();
+    }
 
-        this.fileStorageLocation = path;
+    private void createBucketIfMissing() {
         try {
-            logger.info("Creating Directories");
-            Files.createDirectories(this.fileStorageLocation);
+            try {
+                s3Client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
+            } catch (NoSuchBucketException e) {
+                logger.info("Creating S3 bucket " + bucket);
+                s3Client.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+            }
         } catch (Exception e) {
-            logger.error("Could not create the directory where files will be stored!");
-            throw new FileStorageException("Could not create the directory where files will be stored!", e);
+            logger.error("Could not verify or create the S3 bucket where files will be stored!");
+            throw new FileStorageException("Could not verify or create the S3 bucket where files will be stored!", e);
         }
     }
 
@@ -49,10 +60,15 @@ public class FileStorageService {
                 throw new FileStorageException("Sorry! Filename Contains a Invalid path Sequence " + fileName);
             }
 
-            logger.info("Saving file in Disk");
+            logger.info("Saving file in S3");
 
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(fileName)
+                .contentType(file.getContentType())
+                .build();
+
+            s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
             return fileName;
         } catch (Exception e) {
             logger.error("Could not store file " + fileName + ". Please try Again!");
@@ -62,14 +78,25 @@ public class FileStorageService {
 
     public Resource loadFileAsResource(String fileName) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                logger.error("File not found " + fileName);
-                throw new FileNotFoundException("File not found " + fileName);
-            }
+            byte[] content = s3Client.getObjectAsBytes(
+                GetObjectRequest.builder().bucket(bucket).key(fileName).build()).asByteArray();
+
+            return new ByteArrayResource(content) {
+                @Override
+                public String getFilename() {
+                    return fileName;
+                }
+
+                @Override
+                public File getFile() {
+                    return new File(fileName);
+                }
+
+                @Override
+                public boolean exists() {
+                    return true;
+                }
+            };
         } catch (Exception e) {
             logger.error("File not found " + fileName);
             throw new FileNotFoundException("File not found " + fileName, e);

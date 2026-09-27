@@ -3,8 +3,6 @@ package br.com.erudio.integrationtests.controllers.file;
 import br.com.erudio.integrationtests.AuthenticatedIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Random;
 import java.util.UUID;
 
@@ -12,7 +10,6 @@ import static io.restassured.RestAssured.given;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class FileControllerTest extends AuthenticatedIntegrationTest {
 
@@ -165,7 +162,11 @@ class FileControllerTest extends AuthenticatedIntegrationTest {
             .statusCode(500)
             .body("message", equalTo("Could not store file " + name + ". Please try Again!"));
 
-        assertFalse(Files.exists(Path.of("target", "escaped-" + tag + ".txt")));
+        given().spec(authenticated())
+        .when()
+            .get(BASE + "/downloadFile/escaped-" + tag + ".txt")
+        .then()
+            .statusCode(404);
     }
 
     @Test

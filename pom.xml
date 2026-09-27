@@ -24,6 +24,7 @@
 		<jasperreports.version>7.0.8</jasperreports.version>
 		<zxing.version>3.5.4</zxing.version>
 		<java-jwt.version>4.6.1</java-jwt.version>
+		<aws-sdk.version>2.54.17</aws-sdk.version>
 	</properties>
 	<dependencies>
 
@@ -106,6 +107,11 @@
 			<artifactId>javase</artifactId>
 			<version>${zxing.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>${aws-sdk.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -138,6 +144,11 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers-mysql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-localstack</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
